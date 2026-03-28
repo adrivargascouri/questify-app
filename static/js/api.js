@@ -30,7 +30,16 @@ class API {
           window.location.href = "/login";
           return;
         }
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+        let errorDetail = '';
+        try {
+          const json = await response.json();
+          errorDetail = json.error || JSON.stringify(json);
+        } catch (_) {
+          errorDetail = response.statusText;
+        }
+
+        throw new Error(`HTTP ${response.status}: ${errorDetail}`);
       }
 
       return await response.json();

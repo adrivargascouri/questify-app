@@ -294,6 +294,21 @@ def create_app(config_class=DevelopmentConfig):
         """Get user profile"""
         user = get_current_user()
         return jsonify(user.to_dict()), 200
+
+    @app.route('/api/debug', methods=['GET'])
+    @login_required
+    def debug_info():
+        """Debug endpoint: returns current user and tasks"""
+        user = get_current_user()
+        tasks = Task.query.filter_by(user_id=user.id).all()
+        inventory_items = UserInventory.query.filter_by(user_id=user.id).all()
+
+        return jsonify({
+            'user': user.to_dict(),
+            'task_count': len(tasks),
+            'tasks': [t.to_dict() for t in tasks],
+            'inventory': [i.to_dict() for i in inventory_items]
+        }), 200
     
     # =====================
     # LOOT SELECTION
