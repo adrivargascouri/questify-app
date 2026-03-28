@@ -39,7 +39,9 @@ async function addTask(event) {
   const description = document.getElementById("taskDescription").value.trim();
   const difficulty = document.getElementById("taskDifficulty").value;
   const category = document.getElementById("taskCategory").value;
-  const button = event ? event.target : document.querySelector("button.btn-primary[type='button']");
+  const button = event
+    ? event.target
+    : document.querySelector("button.btn-primary[type='button']");
 
   if (!title) {
     UI.showAlert("Please enter a quest title", "error");
@@ -183,20 +185,24 @@ async function logout() {
   }
 }
 
-// Add Enter key support for task creation
+// Add keyboard and button event support for task creation
 document.addEventListener("DOMContentLoaded", () => {
   const taskInput = document.getElementById("taskTitle");
   if (taskInput) {
     taskInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
-        addTask();
+        addTask(e);
       }
     });
   }
+
+  const createTaskButton = document.getElementById("createTaskButton");
+  if (createTaskButton) {
+    createTaskButton.addEventListener("click", addTask);
+  }
 });
 
-// Expose functions globally for HTML onclick handlers
-window.addTask = addTask;
+// Expose functions globally for non-module HTML action use
 window.completeTask = completeTask;
 window.filterTasks = filterTasks;
 window.closeReward = closeReward;
