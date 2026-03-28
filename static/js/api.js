@@ -20,7 +20,8 @@ class API {
         try {
             const response = await fetch(url, {
                 ...options,
-                headers
+                headers,
+                credentials: 'same-origin'
             });
 
             if (!response.ok) {
