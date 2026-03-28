@@ -34,12 +34,12 @@ async function initializeApp() {
 /**
  * Add a new task
  */
-async function addTask() {
+async function addTask(event) {
   const title = document.getElementById("taskTitle").value.trim();
   const description = document.getElementById("taskDescription").value.trim();
   const difficulty = document.getElementById("taskDifficulty").value;
   const category = document.getElementById("taskCategory").value;
-  const button = event.target;
+  const button = event ? event.target : document.querySelector("button.btn-primary[type='button']");
 
   if (!title) {
     UI.showAlert("Please enter a quest title", "error");
