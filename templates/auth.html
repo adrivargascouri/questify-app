@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if mode == 'login' %}Login{% else %}Register{% endif %} - Questify</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .button-group {
+            margin-top: 30px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .toggle-mode {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .toggle-mode a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .toggle-mode a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alerts {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .alert.error {
+            background-color: #ffe6e6;
+            color: #c00;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .alert.success {
+            background-color: #e6ffe6;
+            color: #060;
+            border-left: 4px solid #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <h1>🎮 Questify</h1>
+            <p>Complete quests & collect loot!</p>
+        </div>
+
+        <div class="alerts" id="alerts"></div>
+
+        <form id="authForm">
+            {% if mode == 'register' %}
+                <!-- Register Form -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required minlength="3" placeholder="Choose a username">
+                    <div class="error-message" id="usernameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                    <div class="error-message" id="emailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required minlength="6" placeholder="At least 6 characters">
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
+                    <div class="error-message" id="confirmError"></div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit">Create Account</button>
+                    <div class="loading" id="loading"></div>
+                </div>
+
+                <div class="toggle-mode">
+                    Already have an account? <a onclick="switchMode('login')">Login</a>
+                </div>
+            {% else %}
+                <!-- Login Form -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Your username">
+                    <div class="error-message" id="usernameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Your password">
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit">Login</button>
+                    <div class="loading" id="loading"></div>
+                </div>
+
+                <div class="toggle-mode">
+                    Don't have an account? <a onclick="switchMode('register')">Create one</a>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('authForm');
+        const loading = document.getElementById('loading');
+        const alertsDiv = document.getElementById('alerts');
+        const currentMode = '{{ mode }}';
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous alerts
+            alertsDiv.innerHTML = '';
+            
+            const formData = new FormData(form);
+            const data = {
+                username: formData.get('username'),
+                password: formData.get('password'),
+            };
+
+            if (currentMode === 'register') {
+                data.email = formData.get('email');
+                data.confirm_password = formData.get('confirm_password');
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            form.querySelectorAll('button, input').forEach(el => el.disabled = true);
+
+            try {
+                const response = await fetch(`/${currentMode}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success - redirect to home
+                    window.location.href = '/';
+                } else {
+                    // Show errors
+                    if (result.errors) {
+                        result.errors.forEach(error => {
+                            const alertDiv = document.createElement('div');
+                            alertDiv.className = 'alert error';
+                            alertDiv.textContent = error;
+                            alertsDiv.appendChild(alertDiv);
+                        });
+                    } else if (result.error) {
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert error';
+                        alertDiv.textContent = result.error;
+                        alertsDiv.appendChild(alertDiv);
+                    }
+                }
+            } catch (error) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert error';
+                alertDiv.textContent = 'An error occurred. Please try again.';
+                alertsDiv.appendChild(alertDiv);
+            } finally {
+                loading.style.display = 'none';
+                form.querySelectorAll('button, input').forEach(el => el.disabled = false);
+            }
+        });
+
+        function switchMode(mode) {
+            window.location.href = `/${mode}`;
+        }
+    </script>
+</body>
+</html>

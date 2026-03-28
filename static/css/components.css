@@ -1,0 +1,132 @@
+/* Components Module - UI component styles */
+
+/* Buttons */
+.btn-small {
+    padding: 6px 10px;
+    font-size: 0.85em;
+}
+
+.btn-medium {
+    padding: 10px 20px;
+    font-size: 0.95em;
+}
+
+.btn-large {
+    padding: 12px 24px;
+    font-size: 1.05em;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-large {
+    padding: var(--spacing-lg);
+}
+
+.card-hover:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* List styles */
+.list-group {
+    list-style: none;
+}
+
+.list-group-item {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Input styles */
+.input-group {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.input-group input,
+.input-group button {
+    flex: 1;
+}
+
+/* Badge styles */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.badge-primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.badge-success {
+    background: var(--color-success);
+    color: white;
+}
+
+.badge-danger {
+    background: var(--color-danger);
+    color: white;
+}
+
+/* Divider */
+.divider {
+    border-top: 1px solid var(--color-border);
+    margin: var(--spacing-lg) 0;
+}
+
+/* Shadow utilities */
+.shadow-sm {
+    box-shadow: var(--shadow-sm);
+}
+
+.shadow-md {
+    box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Rounded utilities */
+.rounded-sm {
+    border-radius: var(--radius-sm);
+}
+
+.rounded-md {
+    border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+    border-radius: var(--radius-lg);
+}
+
+.rounded-full {
+    border-radius: 9999px;
+}

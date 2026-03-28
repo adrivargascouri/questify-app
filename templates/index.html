@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Questify - Complete Quests, Collect Loot!</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/layout.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/components.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/animations.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/responsive.css') }}"
+    />
+    <style>
+      :root {
+        --color-primary: #667eea;
+        --color-secondary: #764ba2;
+        --color-success: #27ae60;
+        --color-warning: #f39c12;
+        --color-danger: #e74c3c;
+        --color-light: #f8f9fa;
+        --color-dark: #2c3e50;
+        --color-border: #e0e0e0;
+        --color-text: #333;
+        --color-text-light: #666;
+
+        --rarity-common: #95a5a6;
+        --rarity-uncommon: #3498db;
+        --rarity-rare: #9b59b6;
+        --rarity-legendary: #f39c12;
+
+        --spacing-xs: 4px;
+        --spacing-sm: 8px;
+        --spacing-md: 16px;
+        --spacing-lg: 24px;
+        --spacing-xl: 32px;
+
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: var(--color-text);
+        min-height: 100vh;
+      }
+
+      .app-container {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+      }
+
+      /* Header */
+      header {
+        background: white;
+        box-shadow: var(--shadow-md);
+        padding: var(--spacing-md) var(--spacing-lg);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--spacing-lg);
+      }
+
+      .logo {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: var(--color-primary);
+      }
+
+      .header-stats {
+        display: flex;
+        gap: var(--spacing-xl);
+        align-items: center;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-label {
+        font-size: 0.75em;
+        color: var(--color-text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-value {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: var(--color-dark);
+      }
+
+      .header-user {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+      }
+
+      .username {
+        font-weight: 600;
+        color: var(--color-dark);
+      }
+
+      .btn-logout {
+        padding: 8px 16px;
+        background: var(--color-danger);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.3s;
+      }
+
+      .btn-logout:hover {
+        background: #c0392b;
+      }
+
+      /* Main Content */
+      main {
+        flex: 1;
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: var(--spacing-lg);
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-xl);
+      }
+
+      /* Section Styles */
+      .section {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-lg);
+        box-shadow: var(--shadow-md);
+      }
+
+      .section-title {
+        font-size: 1.5em;
+        font-weight: 700;
+        margin-bottom: var(--spacing-lg);
+        color: var(--color-dark);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+        border-bottom: 2px solid var(--color-border);
+      }
+
+      .tab-btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--color-text-light);
+        position: relative;
+        transition: color 0.3s;
+      }
+
+      .tab-btn.active {
+        color: var(--color-primary);
+      }
+
+      .tab-btn.active::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--color-primary);
+      }
+
+      /* Form Styles */
+      .form-group {
+        margin-bottom: var(--spacing-md);
+      }
+
+      label {
+        display: block;
+        margin-bottom: var(--spacing-sm);
+        font-weight: 600;
+        color: var(--color-dark);
+        font-size: 0.95em;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: var(--spacing-sm) var(--spacing-md);
+        border: 2px solid var(--color-border);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 1em;
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      /* Task Card */
+      .task-card {
+        background: var(--color-light);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid var(--color-primary);
+        transition: all 0.3s;
+      }
+
+      .task-card:hover {
+        box-shadow: var(--shadow-sm);
+        transform: translateX(4px);
+      }
+
+      .task-card.completed {
+        opacity: 0.6;
+        border-left-color: var(--color-success);
+      }
+
+      .task-info {
+        flex: 1;
+      }
+
+      .task-title {
+        font-weight: 700;
+        color: var(--color-dark);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .task-meta {
+        display: flex;
+        gap: var(--spacing-md);
+        font-size: 0.85em;
+        color: var(--color-text-light);
+      }
+
+      .difficulty-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 0.8em;
+        text-transform: uppercase;
+      }
+
+      .difficulty-easy {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .difficulty-medium {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .difficulty-hard {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .difficulty-legendary {
+        background: #ffebee;
+        color: #b71c1c;
+      }
+
+      .task-actions {
+        display: flex;
+        gap: var(--spacing-sm);
+      }
+
+      .btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9em;
+        transition: all 0.3s;
+        white-space: nowrap;
+      }
+
+      .btn-primary {
+        background: var(--color-primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--color-secondary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-danger {
+        background: #f0f0f0;
+        color: var(--color-danger);
+      }
+
+      .btn-danger:hover {
+        background: var(--color-danger);
+        color: white;
+      }
+
+      /* Loot Item */
+      .loot-item {
+        background: var(--color-light);
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        text-align: center;
+        border: 2px solid var(--color-border);
+        transition: all 0.3s;
+      }
+
+      .loot-item:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .loot-rarity-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        font-size: 0.75em;
+        text-transform: uppercase;
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .rarity-common {
+        background: #e8e8e8;
+        color: #555;
+      }
+
+      .rarity-uncommon {
+        background: #d4e6f1;
+        color: #1e5f8c;
+      }
+
+      .rarity-rare {
+        background: #ebcce8;
+        color: #663399;
+      }
+
+      .rarity-legendary {
+        background: #fde5ba;
+        color: #b8860b;
+      }
+
+      .loot-emoji {
+        font-size: 2.5em;
+        margin: var(--spacing-md) 0;
+      }
+
+      .loot-name {
+        font-weight: 700;
+        color: var(--color-dark);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .loot-quantity {
+        display: inline-block;
+        background: var(--color-primary);
+        color: white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        font-weight: 700;
+        font-size: 0.9em;
+        margin-top: var(--spacing-sm);
+      }
+
+      /* Alerts & Messages */
+      .alert {
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--spacing-md);
+        border-left: 4px solid;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border-left-color: #28a745;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border-left-color: #f5c6cb;
+      }
+
+      .alert-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border-left-color: #bee5eb;
+      }
+
+      /* Loading Spinner */
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: var(--spacing-xl);
+        color: var(--color-text-light);
+      }
+
+      .empty-state-emoji {
+        font-size: 3em;
+        margin-bottom: var(--spacing-md);
+      }
+
+      .empty-state-text {
+        font-size: 1.1em;
+        margin-bottom: var(--spacing-md);
+      }
+
+      /* Reward Popup */
+      .reward-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: var(--spacing-xl);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        z-index: 1000;
+        text-align: center;
+        display: none;
+        animation: popupAppear 0.3s ease-out;
+      }
+
+      .reward-popup.show {
+        display: block;
+      }
+
+      @keyframes popupAppear {
+        from {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      .reward-emoji {
+        font-size: 4em;
+        margin-bottom: var(--spacing-md);
+        animation: bounce 0.6s ease-in-out;
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      .reward-points {
+        font-size: 2em;
+        font-weight: 700;
+        color: var(--color-success);
+        margin: var(--spacing-md) 0;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+
+      .modal-overlay.show {
+        display: block;
+      }
+
+      .task-card.completing {
+        animation: completingPulse 1s ease-in-out;
+      }
+
+      .task-card.completed {
+        animation: completedFade 0.5s ease-out forwards;
+      }
+
+      @keyframes completingPulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes completedFade {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+      }
+
+      .category-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        font-size: 0.75em;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-right: var(--spacing-sm);
+      }
+
+      .category-work {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+      .category-health {
+        background: #e8f5e8;
+        color: #2e7d32;
+      }
+      .category-learning {
+        background: #fff3e0;
+        color: #ef6c00;
+      }
+      .category-chores {
+        background: #f3e5f5;
+        color: #7b1fa2;
+      }
+      .category-social {
+        background: #fce4ec;
+        color: #c2185b;
+      }
+      .category-creative {
+        background: #e0f2f1;
+        color: #00695c;
+      }
+      .category-general {
+        background: #f5f5f5;
+        color: #616161;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: var(--radius-md);
+        padding: var(--spacing-md);
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--color-border);
+      }
+
+      .stat-emoji {
+        font-size: 2em;
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .stat-number {
+        font-size: 2em;
+        font-weight: 700;
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .stat-label {
+        font-size: 0.85em;
+        color: var(--color-text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Header -->
+      <header>
+        <div class="header-content">
+          <div class="logo">🎮 Questify</div>
+
+          <div class="header-stats">
+            <div class="stat-item">
+              <div class="stat-label">Level</div>
+              <div class="stat-value" id="userLevel">1</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Points</div>
+              <div class="stat-value" id="userPoints">0</div>
+            </div>
+          </div>
+
+          <div class="header-user">
+            <div class="username" id="username">Player</div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main>
+        <div class="dashboard">
+          <!-- Tasks Section -->
+          <section class="section">
+            <h2 class="section-title">📋 Quests</h2>
+
+            <!-- Add Task Form -->
+            <div style="margin-bottom: var(--spacing-lg)">
+              <div class="form-group">
+                <label for="taskTitle">Quest Title</label>
+                <input
+                  type="text"
+                  id="taskTitle"
+                  placeholder="What's your next quest?"
+                  maxlength="200"
+                />
+              </div>
+              <div class="form-group">
+                <label for="taskDescription">Description (optional)</label>
+                <textarea
+                  id="taskDescription"
+                  placeholder="Add details..."
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="taskCategory">Category</label>
+                <select id="taskCategory">
+                  <option value="general">General</option>
+                  <option value="work">Work</option>
+                  <option value="health">Health & Fitness</option>
+                  <option value="learning">Learning</option>
+                  <option value="chores">Chores</option>
+                  <option value="social">Social</option>
+                  <option value="creative">Creative</option>
+                </select>
+              </div>
+              <button
+                class="btn btn-primary"
+                type="button"
+                onclick="addTask()"
+                style="width: 100%"
+              >
+                + Create Quest
+              </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+              <button class="tab-btn active" onclick="filterTasks('all')">
+                All
+              </button>
+              <button class="tab-btn" onclick="filterTasks('active')">
+                Active
+              </button>
+              <button class="tab-btn" onclick="filterTasks('completed')">
+                Completed
+              </button>
+            </div>
+
+            <!-- Tasks List -->
+            <div id="tasksList"></div>
+          </section>
+
+          <!-- Inventory Section -->
+          <section class="section">
+            <h2 class="section-title">🎒 Inventory</h2>
+            <div
+              id="inventoryGrid"
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: var(--spacing-md);
+              "
+            ></div>
+          </section>
+
+          <!-- Statistics Section -->
+          <section class="section">
+            <h2 class="section-title">📊 Statistics</h2>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: var(--spacing-md);
+              "
+            >
+              <div class="stat-card">
+                <div class="stat-emoji">✅</div>
+                <div class="stat-number" id="totalCompleted">0</div>
+                <div class="stat-label">Tasks Completed</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-emoji">🎁</div>
+                <div class="stat-number" id="totalLoot">0</div>
+                <div class="stat-label">Items Collected</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-emoji">⭐</div>
+                <div class="stat-number" id="avgDifficulty">0</div>
+                <div class="stat-label">Avg Difficulty</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-emoji">📅</div>
+                <div class="stat-number" id="daysActive">0</div>
+                <div class="stat-label">Days Active</div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="rewardOverlay"></div>
+    <div class="reward-popup" id="rewardPopup">
+      <div class="reward-emoji" id="rewardEmoji">🎁</div>
+      <h3 id="rewardName">Treasure Found!</h3>
+      <div class="reward-points" id="rewardPoints">+5</div>
+      <p
+        id="rewardRarity"
+        style="color: #888; margin-bottom: var(--spacing-lg)"
+      ></p>
+      <button class="btn btn-primary btn-large" onclick="closeReward()">
+        Awesome!
+      </button>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="{{ url_for('static', filename='js/api.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/state.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>
