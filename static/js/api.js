@@ -3,102 +3,107 @@
  */
 
 class API {
-    constructor(baseURL = '') {
-        this.baseURL = baseURL;
-    }
+  constructor(baseURL = "") {
+    this.baseURL = baseURL;
+  }
 
-    /**
-     * Generic fetch wrapper with error handling
-     */
-    async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
-        const headers = {
-            'Content-Type': 'application/json',
-            ...options.headers
-        };
+  /**
+   * Generic fetch wrapper with error handling
+   */
+  async request(endpoint, options = {}) {
+    const url = `${this.baseURL}${endpoint}`;
+    const headers = {
+      "Content-Type": "application/json",
+      ...options.headers,
+    };
 
-        try {
-            const response = await fetch(url, {
-                ...options,
-                headers,
-                credentials: 'same-origin'
-            });
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+        credentials: "include", // include cookies for session across subdomains
+      });
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    // Not authenticated - redirect to login
-                    window.location.href = '/login';
-                    return;
-                }
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Not authenticated - redirect to login
+          window.location.href = "/login";
+          return;
         }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("API Error:", error);
+      throw error;
     }
+  }
 
-    // ===== TASKS API =====
+  // ===== TASKS API =====
 
-    /**
-     * Get all tasks for current user
-     */
-    async getTasks() {
-        return this.request('/api/tasks', { method: 'GET' });
-    }
+  /**
+   * Get all tasks for current user
+   */
+  async getTasks() {
+    return this.request("/api/tasks", { method: "GET" });
+  }
 
-    /**
-     * Create a new task
-     */
-    async createTask(title, description = '', difficulty = 'medium', category = 'general') {
-        return this.request('/api/tasks', {
-            method: 'POST',
-            body: JSON.stringify({ title, description, difficulty, category })
-        });
-    }
+  /**
+   * Create a new task
+   */
+  async createTask(
+    title,
+    description = "",
+    difficulty = "medium",
+    category = "general",
+  ) {
+    return this.request("/api/tasks", {
+      method: "POST",
+      body: JSON.stringify({ title, description, difficulty, category }),
+    });
+  }
 
-    /**
-     * Complete a task
-     */
-    async completeTask(taskId) {
-        return this.request(`/api/tasks/${taskId}/complete`, { method: 'PUT' });
-    }
+  /**
+   * Complete a task
+   */
+  async completeTask(taskId) {
+    return this.request(`/api/tasks/${taskId}/complete`, { method: "PUT" });
+  }
 
-    /**
-     * Delete a task
-     */
-    async deleteTask(taskId) {
-        return this.request(`/api/tasks/${taskId}`, { method: 'DELETE' });
-    }
+  /**
+   * Delete a task
+   */
+  async deleteTask(taskId) {
+    return this.request(`/api/tasks/${taskId}`, { method: "DELETE" });
+  }
 
-    // ===== INVENTORY API =====
+  // ===== INVENTORY API =====
 
-    /**
-     * Get user's inventory
-     */
-    async getInventory() {
-        return this.request('/api/inventory', { method: 'GET' });
-    }
+  /**
+   * Get user's inventory
+   */
+  async getInventory() {
+    return this.request("/api/inventory", { method: "GET" });
+  }
 
-    // ===== USER API =====
+  // ===== USER API =====
 
-    /**
-     * Get user profile
-     */
-    async getProfile() {
-        return this.request('/api/profile', { method: 'GET' });
-    }
+  /**
+   * Get user profile
+   */
+  async getProfile() {
+    return this.request("/api/profile", { method: "GET" });
+  }
 
-    // ===== AUTH API =====
+  // ===== AUTH API =====
 
-    /**
-     * Logout user
-     */
-    async logout() {
-        return this.request('/logout', { method: 'GET' });
-    }
+  /**
+   * Logout user
+   */
+  async logout() {
+    return this.request("/logout", { method: "GET" });
+  }
 }
 
 // Create global API instance
