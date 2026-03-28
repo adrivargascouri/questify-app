@@ -343,7 +343,17 @@ app = create_app()
 
 if __name__ == '__main__':
     with app.app_context():
+        # Inicializar base de datos
         db.create_all()
+
+        # Seed de loot items si no existen (solo primera vez)
+        from modelos.models import LootItem
+        if not LootItem.query.first():
+            print("🌱 Inicializando items de loot...")
+            # Ejecutar seed
+            exec(open('scripts/seed_db.py').read())
+            print("✅ Base de datos inicializada con items de loot")
+
     # For production deployment
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
