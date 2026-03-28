@@ -194,3 +194,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+// Expose functions globally for HTML onclick handlers
+window.addTask = addTask;
+window.completeTask = completeTask;
+window.filterTasks = filterTasks;
+window.closeReward = closeReward;
+window.logout = logout;
