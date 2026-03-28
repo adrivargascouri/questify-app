@@ -35,10 +35,20 @@ async function initializeApp() {
  * Add a new task
  */
 async function addTask(event) {
-  const title = document.getElementById("taskTitle").value.trim();
-  const description = document.getElementById("taskDescription").value.trim();
-  const difficulty = document.getElementById("taskDifficulty").value;
-  const category = document.getElementById("taskCategory").value;
+  const titleEl = document.getElementById("taskTitle");
+  if (!titleEl) {
+    console.warn("Task form inputs not found - addTask aborted.");
+    return;
+  }
+
+  const descriptionEl = document.getElementById("taskDescription");
+  const difficultyEl = document.getElementById("taskDifficulty");
+  const categoryEl = document.getElementById("taskCategory");
+
+  const title = titleEl.value.trim();
+  const description = descriptionEl ? descriptionEl.value.trim() : "";
+  const difficulty = difficultyEl ? difficultyEl.value : "medium";
+  const category = categoryEl ? categoryEl.value : "general";
   const button = event
     ? event.target
     : document.querySelector("button.btn-primary[type='button']");

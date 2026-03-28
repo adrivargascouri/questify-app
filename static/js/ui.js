@@ -211,10 +211,15 @@ class UI {
    * Clear all input fields
    */
   static clearTaskForm() {
-    document.getElementById("taskTitle").value = "";
-    document.getElementById("taskDescription").value = "";
-    document.getElementById("taskDifficulty").value = "medium";
-    document.getElementById("taskCategory").value = "general";
+    const titleEl = document.getElementById("taskTitle");
+    const descriptionEl = document.getElementById("taskDescription");
+    const difficultyEl = document.getElementById("taskDifficulty");
+    const categoryEl = document.getElementById("taskCategory");
+
+    if (titleEl) titleEl.value = "";
+    if (descriptionEl) descriptionEl.value = "";
+    if (difficultyEl) difficultyEl.value = "medium";
+    if (categoryEl) categoryEl.value = "general";
   }
 
   /**
